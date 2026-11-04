@@ -1094,6 +1094,8 @@
 .developer-shell .prototype-auth-panel > header h2 { margin: 0; }
 .developer-shell .prototype-auth-confirm { width: 100%; min-height: 36px; margin: 2px 0 8px; border: 1px solid transparent; border-radius: var(--dev-radius); background: var(--dev-brand); color: #fff8f3; cursor: pointer; font-size: 12px; font-weight: 600; }
 .developer-shell .prototype-auth-confirm:disabled { border-color: var(--dev-line); background: #242323; color: var(--dev-subtle); cursor: default; }
+.developer-shell .prototype-auth-reset { width: 100%; min-height: 32px; border: 1px solid var(--dev-line); border-radius: var(--dev-radius); background: transparent; color: var(--dev-body); cursor: pointer; font-size: 11px; }
+.developer-shell .prototype-auth-reset:hover { border-color: var(--dev-border); color: var(--dev-text); }
 .developer-shell .prototype-auth-save-error { color: #ef9b88 !important; font-size: 11px !important; }
 
 .api-hierarchy-list { gap: 2px; }

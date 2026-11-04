@@ -60,7 +60,10 @@ export function setMockAccessStatus(accessStatus: DeveloperAccessStatus) {
 }
 
 export function persistMockAccessStatus(accessStatus: DeveloperAccessStatus) {
-  const nextState = { ...state, accessStatus }
+  return persistMockAuthState({ ...state, accessStatus })
+}
+
+export function persistMockAuthState(nextState: MockAuthState) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState))
   } catch {
@@ -72,7 +75,7 @@ export function persistMockAccessStatus(accessStatus: DeveloperAccessStatus) {
 }
 
 export function resetMockAuthState() {
-  updateState(defaultState)
+  return persistMockAuthState(defaultState)
 }
 
 if (typeof window !== 'undefined') {

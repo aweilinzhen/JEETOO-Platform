@@ -2,7 +2,7 @@ import { Fragment, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { QuickStartCodeBlock } from '../components/QuickStartCodeBlock'
 import { apiDocs, type ApiDocNode, type MarkdownBlock } from '../mock/apiDocs'
-import { getRestrictedResourcePath, useMockAuthState } from '../mock/access'
+import { useMockAuthState } from '../mock/access'
 
 function inlineMarkdown(text: string): ReactNode[] {
   const nodes: ReactNode[] = []
@@ -82,7 +82,7 @@ function renderNodeContent(node: ApiDocNode, depth = 0): ReactNode {
 }
 
 export function ApiReferencePage() {
-  const { loginStatus, accessStatus } = useMockAuthState()
+  const { loginStatus } = useMockAuthState()
   const initialId = apiDocs[0]?.id ?? ''
   const [selectedId, setSelectedId] = useState(initialId)
   const [search, setSearch] = useState('')
@@ -91,9 +91,7 @@ export function ApiReferencePage() {
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({})
   const selected = findNode(apiDocs, selectedId) ?? apiDocs[0]
   const selectedPath = findPath(apiDocs, selected.id)
-  const authorized = loginStatus === 'logged_in' && accessStatus === 'authorized'
-  const gateHref = getRestrictedResourcePath('/developer/api')
-  const gateLabel = loginStatus === 'logged_out' ? '登录查看' : accessStatus === 'pending' ? '查看申请状态' : accessStatus === 'rejected' ? '重新申请' : '申请开发接入'
+  const authorized = loginStatus === 'logged_in'
   const query = search.trim().toLocaleLowerCase()
   const filteredDocs = useMemo(() => {
     if (!query) return apiDocs
@@ -145,18 +143,21 @@ export function ApiReferencePage() {
         </aside>
 
         <article className="api-doc-content">
-          {!selected ? <div className="api-empty-state"><h2>API 文档暂不可用</h2></div> : filteredDocs.length === 0 ? <div className="api-empty-state"><span>⌕</span><h2>没有找到匹配内容</h2><p>请尝试其他章节名称或关键词。</p></div> : <>
+          {!selected ? <div className="api-empty-state"><h2>API 文档暂不可用</h2></div> : <>
             <header className="api-doc-header" id="api-top">
               <div className="apply-eyebrow"><span /> ANDROID SDK DOCUMENTATION</div>
               <div className="api-title-row"><div><div className="api-doc-breadcrumb">{selectedPath.slice(0, -1).map((item) => item.title).join(' / ') || 'Android SDK'}</div><h1>{selected.title}</h1></div><span className="platform-chip">ANDROID</span></div>
-              {!authorized && <div className={`api-access-banner api-access-${accessStatus}`}><span>⌑</span><div><b>{loginStatus === 'logged_out' ? '登录后查看完整 API 文档' : accessStatus === 'pending' ? '申请审核中' : accessStatus === 'rejected' ? '完整文档需要开发者授权' : 'API 详情需要开发者授权'}</b><p>{loginStatus === 'logged_out' ? '登录后可查看当前账号对应的 API 文档权限。' : accessStatus === 'pending' ? '审核通过后即可查看原始 SDK 章节内容。' : accessStatus === 'rejected' ? '申请未通过，可调整申请资料后重新提交。' : '当前可浏览原始章节目录，完整技术内容面向已授权开发者开放。'}</p></div><Link to={gateHref}>{gateLabel}<span>↗</span></Link></div>}
               {authorized && <div className="api-mock-note"><span>i</span> 以下章节内容直接依据《加推录音卡Android SDK.md》原文展示。</div>}
             </header>
 
-            {!authorized ? <section className="api-locked-details"><div className="api-locked-mark">⌑</div><div><h2>章节内容暂不可见</h2><p>完成开发者授权后，可查看本章节的原始说明、代码和参数表格。</p></div><Link className="button button-accent" to={gateHref}>{gateLabel}<span>↗</span></Link></section> : <section className="api-raw-content" id={`api-section-${selected.id}`}>
-              {renderNodeContent(selected)}
-            </section>}
-            <div className="api-doc-footer-note">章节标题、说明、代码及表格均按原始 Markdown 展示。</div>
+            {!authorized
+              ? <section className="api-locked-details"><div className="api-locked-mark">⌑</div><div><h2>登录后查看完整 API 文档</h2><p>登录开发者账号后，即可查看当前产品对应的完整 API 文档。</p></div><Link className="button button-accent" to="/developer/login">立即登录 <span>↗</span></Link></section>
+              : filteredDocs.length === 0
+                ? <div className="api-empty-state"><span>⌕</span><h2>没有找到匹配内容</h2><p>请尝试其他章节名称或关键词。</p></div>
+                : <><section className="api-raw-content" id={`api-section-${selected.id}`}>
+                    {renderNodeContent(selected)}
+                  </section>
+                  <div className="api-doc-footer-note">章节标题、说明、代码及表格均按原始 Markdown 展示。</div></>}
           </>}
         </article>
 
