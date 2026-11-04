@@ -1,18 +1,44 @@
-import { Fragment, useMemo, useState, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { QuickStartCodeBlock } from '../components/QuickStartCodeBlock'
 import { type ApiDocNode, type MarkdownBlock } from '../mock/apiDocs'
-import { API_PLATFORM_STORAGE_KEY, apiPlatformDocs, apiPlatforms, type ApiPlatform } from '../mock/apiPlatformDocs'
+import { API_PLATFORM_STORAGE_KEY, API_SELECTION_STORAGE_KEY, apiPlatforms, apiProducts, apiProductDocs, type ApiPlatform, type ApiProduct } from '../mock/apiPlatformDocs'
 import { useMockAuthState } from '../mock/access'
 
-function readApiPlatform(): ApiPlatform {
-  if (typeof window === 'undefined') return 'android'
+type ApiSelection = { product: ApiProduct; platform: ApiPlatform; section: string }
+
+function isProduct(value: string | null): value is ApiProduct {
+  return value === 'recorder-card' || value === 'smart-badge' || value === 'pin'
+}
+
+function isPlatform(value: string | null): value is ApiPlatform {
+  return value === 'android' || value === 'ios' || value === 'harmony'
+}
+
+function readSavedSelection(): Partial<ApiSelection> {
+  if (typeof window === 'undefined') return {}
   try {
-    const saved = window.localStorage.getItem(API_PLATFORM_STORAGE_KEY)
-    return saved === 'ios' || saved === 'harmony' ? saved : 'android'
+    const saved = JSON.parse(window.localStorage.getItem(API_SELECTION_STORAGE_KEY) ?? 'null') as Partial<ApiSelection> | null
+    const legacyPlatform = window.localStorage.getItem(API_PLATFORM_STORAGE_KEY)
+    const savedPlatform = saved?.platform ?? legacyPlatform
+    return {
+      ...(isProduct(saved?.product ?? null) ? { product: saved!.product } : {}),
+      ...(isPlatform(savedPlatform) ? { platform: savedPlatform } : {}),
+      ...(typeof saved?.section === 'string' ? { section: saved.section } : {}),
+    }
   } catch {
-    return 'android'
+    return {}
   }
+}
+
+function initialSelection(params: URLSearchParams): ApiSelection {
+  const saved = readSavedSelection()
+  const product = isProduct(params.get('product')) ? params.get('product') as ApiProduct : saved.product ?? 'recorder-card'
+  const platform = isPlatform(params.get('platform')) ? params.get('platform') as ApiPlatform : saved.platform ?? 'android'
+  const availableDocs = apiProductDocs[product][platform]
+  const requestedSection = params.get('section') ?? saved.section
+  const section = requestedSection && findNode(availableDocs, requestedSection) ? requestedSection : availableDocs[0]?.id ?? ''
+  return { product, platform, section }
 }
 
 function inlineMarkdown(text: string): ReactNode[] {
@@ -94,14 +120,19 @@ function renderNodeContent(node: ApiDocNode, depth = 0): ReactNode {
 
 export function ApiReferencePage() {
   const { loginStatus } = useMockAuthState()
-  const [platform, setPlatform] = useState<ApiPlatform>(readApiPlatform)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [initial] = useState(() => initialSelection(searchParams))
+  const [product, setProduct] = useState<ApiProduct>(initial.product)
+  const [platform, setPlatform] = useState<ApiPlatform>(initial.platform)
   const activePlatform = apiPlatforms.find((item) => item.id === platform) ?? apiPlatforms[0]
-  const activeDocs = apiPlatformDocs[platform]
-  const [selectedId, setSelectedId] = useState(activeDocs[0]?.id ?? '')
+  const productDocs = apiProductDocs[product]
+  const activeDocs = productDocs[platform]
+  const [selectedId, setSelectedId] = useState(initial.section)
   const [search, setSearch] = useState('')
   const [categoriesOpen, setCategoriesOpen] = useState(false)
-  const [directoryOpen, setDirectoryOpen] = useState(true)
+  const [expandedPlatforms, setExpandedPlatforms] = useState<Record<ApiPlatform, boolean>>(() => ({ android: initial.platform === 'android', ios: initial.platform === 'ios', harmony: initial.platform === 'harmony' }))
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({})
+  const selectedProduct = apiProducts.find((item) => item.id === product) ?? apiProducts[0]
   const selected = findNode(activeDocs, selectedId) ?? activeDocs[0]
   const selectedPath = selected ? findPath(activeDocs, selected.id) : []
   const authorized = loginStatus === 'logged_in'
@@ -116,23 +147,64 @@ export function ApiReferencePage() {
     return activeDocs.map(filterNode).filter((node): node is ApiDocNode => node !== null)
   }, [activeDocs, query])
 
-  const selectPlatform = (nextPlatform: ApiPlatform) => {
+  const saveSelection = (next: ApiSelection, replace = false) => {
+    setSearchParams({ product: next.product, platform: next.platform, section: next.section }, { replace })
+    try {
+      window.localStorage.setItem(API_SELECTION_STORAGE_KEY, JSON.stringify(next))
+      window.localStorage.setItem(API_PLATFORM_STORAGE_KEY, next.platform)
+    } catch { /* keep the current selection in memory */ }
+  }
+
+  useEffect(() => {
+    if (!searchParams.has('product') && !searchParams.has('platform') && !searchParams.has('section')) {
+      saveSelection({ product, platform, section: selectedId }, true)
+    } else {
+      const next = initialSelection(searchParams)
+      setProduct(next.product)
+      setPlatform(next.platform)
+      setSelectedId(next.section)
+      setExpandedPlatforms({ android: next.platform === 'android', ios: next.platform === 'ios', harmony: next.platform === 'harmony' })
+    }
+  // URL history entries restore the product, platform and selected section.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
+
+  const selectProduct = (nextProduct: ApiProduct) => {
+    const nextPlatform: ApiPlatform = 'android'
+    const nextSection = apiProductDocs[nextProduct][nextPlatform][0]?.id ?? ''
+    setProduct(nextProduct)
     setPlatform(nextPlatform)
-    setSelectedId(apiPlatformDocs[nextPlatform][0]?.id ?? '')
+    setSelectedId(nextSection)
     setSearch('')
     setExpandedChapters({})
-    try { window.localStorage.setItem(API_PLATFORM_STORAGE_KEY, nextPlatform) } catch { /* keep the current selection in memory */ }
+    setExpandedPlatforms({ android: true, ios: false, harmony: false })
+    saveSelection({ product: nextProduct, platform: nextPlatform, section: nextSection })
+  }
+
+  const selectPlatform = (nextPlatform: ApiPlatform) => {
+    if (nextPlatform === platform) {
+      setExpandedPlatforms((previous) => ({ ...previous, [nextPlatform]: !previous[nextPlatform] }))
+      return
+    }
+    const nextSection = apiProductDocs[product][nextPlatform][0]?.id ?? ''
+    setPlatform(nextPlatform)
+    setSelectedId(nextSection)
+    setSearch('')
+    setExpandedChapters({})
+    setExpandedPlatforms((previous) => ({ ...previous, [nextPlatform]: true }))
+    saveSelection({ product, platform: nextPlatform, section: nextSection })
   }
 
   const selectDoc = (id: string) => {
     setSelectedId(id)
     setCategoriesOpen(false)
+    saveSelection({ product, platform, section: id })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   const toggleChapter = (id: string) => setExpandedChapters((previous) => ({ ...previous, [id]: !(previous[id] ?? true) }))
   const isExpanded = (id: string) => expandedChapters[id] ?? true
   const renderDirectoryNode = (node: ApiDocNode, depth = 0): ReactNode => {
-    const directoryChildren = node.id === '1' ? [] : node.children.filter((child) => Boolean(child.number))
+    const directoryChildren = node.children.filter((child) => Boolean(child.number))
     const title = node.title.replace(/^\d+(?:\.\d+)?[、.，]?\s*/, '')
     return <div className={`api-directory-node api-directory-depth-${Math.min(depth, 1)}`} key={node.id}>
       <div className={`api-directory-row${selectedId === node.id ? ' is-selected' : ''}`}>
@@ -167,26 +239,41 @@ export function ApiReferencePage() {
         <aside className="api-category-sidebar">
           <button className="api-category-toggle" type="button" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen((open) => !open)}><span>API 文档目录</span><b>{categoriesOpen ? '−' : '+'}</b></button>
           <div className={`api-category-panel${categoriesOpen ? ' is-open' : ''}`}>
+            <label className="api-product-label" htmlFor="api-product-select">产品选择</label>
+            <select id="api-product-select" className="api-product-select" value={product} onChange={(event) => selectProduct(event.target.value as ApiProduct)} aria-label="选择产品">
+              {apiProducts.map((item) => <option value={item.id} key={item.id}>{item.label}</option>)}
+            </select>
             <label className="api-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索章节" aria-label="搜索 API 章节" /></label>
-            <button className="api-directory-toggle" type="button" aria-expanded={directoryOpen} onClick={() => setDirectoryOpen((open) => !open)}><span>{activePlatform.sidebarTitle}</span><b>{directoryOpen ? '−' : '+'}</b></button>
-            {directoryOpen && <nav className="api-category-list api-hierarchy-list" aria-label={`${activePlatform.sidebarTitle} 章节目录`}>
-              {filteredDocs.map((node) => renderDirectoryNode(node))}
-              {filteredDocs.length === 0 && <div className="api-search-empty">没有找到匹配的章节</div>}
-            </nav>}
+            <nav className="api-platform-menu" aria-label={`${selectedProduct.label} 平台文档目录`}>
+              {apiPlatforms.map((item) => {
+                const isPlatformExpanded = item.id === platform && expandedPlatforms[item.id]
+                const platformDocs = apiProductDocs[product][item.id]
+                const platformFilteredDocs = item.id === platform ? filteredDocs : platformDocs
+                return <section className={`api-platform-menu-section${platform === item.id ? ' is-active' : ''}`} key={item.id}>
+                  <button className="api-platform-menu-button" type="button" aria-expanded={isPlatformExpanded} aria-current={platform === item.id ? 'true' : undefined} onClick={() => selectPlatform(item.id)}>
+                    <span className={`api-platform-menu-caret${isPlatformExpanded ? ' is-expanded' : ''}`}>›</span>
+                    <span>{item.sidebarTitle}</span>
+                  </button>
+                  {isPlatformExpanded && <div className="api-platform-menu-docs">
+                    {platformFilteredDocs.map((node) => renderDirectoryNode(node))}
+                    {platformFilteredDocs.length === 0 && <div className="api-search-empty">没有找到匹配的章节</div>}
+                  </div>}
+                </section>
+              })}
+            </nav>
           </div>
         </aside>
 
         <article className="api-doc-content">
-          <nav className="api-platform-tabs" aria-label="选择 API 文档平台">
-            {apiPlatforms.map((item) => <button className={platform === item.id ? 'is-active' : ''} type="button" aria-pressed={platform === item.id} key={item.id} onClick={() => selectPlatform(item.id)}>{item.label}</button>)}
-          </nav>
           {!selected ? <div className="api-empty-state"><h2>API 文档暂不可用</h2></div> : <>
             <header className="api-doc-header" id="api-top">
               <div className="apply-eyebrow"><span /> {activePlatform.documentationTitle.toUpperCase()}</div>
               <div className="api-title-row"><div><div className="api-doc-breadcrumb">{selectedPath.slice(0, -1).map((item) => item.title).join(' / ') || activePlatform.sidebarTitle}</div><h1>{selected.title}</h1></div><span className="platform-chip">{activePlatform.label.toUpperCase()}</span></div>
-              {platform === 'android'
+              {product === 'recorder-card' && platform === 'android'
                 ? <div className="api-mock-note"><span>i</span> 以下章节内容直接依据《加推录音卡Android SDK.md》原文展示。</div>
-                : <div className="api-platform-status"><b>{platform === 'ios' ? '筹备中' : '规划中'}</b><span>{platform === 'ios' ? 'iOS SDK 正在整理中，后续将通过更新日志发布。' : '鸿蒙 SDK 正在准备中，后续开放信息将通过更新日志发布。'}</span></div>}
+                : <div className="api-platform-status"><b>{platform === 'ios' ? '筹备中' : platform === 'harmony' ? '规划中' : 'Mock'}</b><span>{product === 'recorder-card'
+                  ? platform === 'ios' ? 'iOS SDK 正在整理中，后续将通过更新日志发布。' : '鸿蒙 SDK 正在准备中，后续开放信息将通过更新日志发布。'
+                  : `${selectedProduct.label} 的该平台文档为独立 Mock 占位内容，接口资料待补充。`}</span></div>}
             </header>
 
             {filteredDocs.length === 0
