@@ -220,9 +220,10 @@
 .sdk-download-heading h1 { margin: 12px 0 6px; color: #f2efe8; font-size: 31px; font-weight: 500; letter-spacing: -.045em; }
 .sdk-download-heading > p { margin: 0; color: #aaa69e; font-size: 12px; }
 .sdk-download-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .85fr); gap: 17px; align-items: stretch; }
+.sdk-download-side-stack { display: grid; min-width: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 17px; }
 .sdk-download-card { position: relative; min-width: 0; min-height: 358px; padding: 24px 25px 21px; border: 1px solid #373633; background: #171716; }
 .sdk-download-android { border-top: 2px solid var(--accent); }
-.sdk-download-ios { border-top: 2px solid #67645e; }
+.sdk-download-ios, .sdk-download-harmony { border-top: 2px solid #67645e; }
 .sdk-download-card-top { display: flex; align-items: center; justify-content: space-between; }
 .sdk-download-copy { margin-top: 23px; }
 .sdk-download-copy h2 { margin: 8px 0 9px; color: #eeeae2; font-size: 21px; font-weight: 500; }
@@ -241,6 +242,15 @@
 .sdk-authorization-note { display: flex; align-items: center; gap: 7px; margin-top: 14px; color: #b6b1a8; font-size: 13px; }
 .sdk-authorization-note > span { display: grid; place-items: center; width: 13px; height: 13px; border: 1px solid #6f695e; border-radius: 50%; color: #c9c1b3; font: 8px var(--mono); }
 .sdk-download-ios { display: flex; flex-direction: column; }
+.sdk-download-harmony { display: flex; flex-direction: column; }
+.sdk-download-side-stack .sdk-download-card { min-height: 0; padding: 18px 20px 16px; }
+.sdk-download-side-stack .sdk-download-copy { margin-top: 13px; }
+.sdk-download-side-stack .sdk-download-copy h2 { margin: 5px 0 6px; font-size: 18px; }
+.sdk-download-side-stack .sdk-download-copy p { font-size: 13px; line-height: 1.55; }
+.sdk-download-side-stack .ios-coming-visual { min-height: 30px; font-size: 18px; }
+.sdk-download-side-stack .ios-coming-visual i { width: 24px; }
+.sdk-download-side-stack .ios-coming-visual span:last-child { font-size: 11px; }
+.sdk-download-side-stack .ios-download-state { padding-top: 10px; }
 .ios-coming-visual { display: flex; align-items: center; justify-content: center; gap: 12px; flex: 1; min-height: 115px; color: #c1bdb5; font: 28px var(--mono); }
 .ios-coming-visual i { width: 38px; height: 1px; background: #504d47; }
 .ios-coming-visual span:last-child { color: #77736c; font-size: 14px; }
@@ -308,6 +318,17 @@
 .quick-start-endnote { padding-top: 15px; color: #a19b92; font-size: 12px; line-height: 1.6; }
 
 .api-reference-page { padding-top: 27px; }
+.api-login-gate { display: grid; place-items: center; width: min(760px, 100%); min-height: clamp(430px, calc(100vh - 250px), 720px); margin: 0 auto; padding: 42px 22px; text-align: center; }
+.api-login-gate-content { display: flex; width: 100%; flex-direction: column; align-items: center; }
+.api-login-eyebrow { display: flex; align-items: center; gap: 9px; color: #a8a39a; font: 10px var(--mono); letter-spacing: .16em; }
+.api-login-eyebrow > span { width: 6px; height: 6px; border-radius: 50%; background: var(--dev-brand); }
+.api-login-status { margin-top: 24px; padding: 6px 9px; border: 1px solid #504039; color: #e39a7c; font: 9px var(--mono); letter-spacing: .12em; }
+.api-login-lock { display: grid; place-items: center; width: 62px; height: 62px; margin-top: 28px; border: 1px solid #50372e; color: var(--dev-brand); }
+.api-login-lock svg { width: 30px; height: 30px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.api-login-gate h1 { margin: 22px 0 10px; color: var(--dev-text); font-size: clamp(26px, 3vw, 34px); font-weight: 500; letter-spacing: -.035em; }
+.api-login-gate-content > p { max-width: 540px; margin: 0; color: var(--dev-body); font-size: 14px; line-height: 1.9; }
+.api-login-button { min-width: 144px; min-height: 42px; justify-content: center; gap: 12px; margin-top: 25px; border-radius: var(--dev-radius); font-size: 13px; }
+.api-login-footnote { margin-top: 14px; color: var(--dev-subtle); font-size: 12px; }
 .api-docs-layout { display: grid; grid-template-columns: 205px minmax(0, 760px) 145px; gap: clamp(22px, 3vw, 42px); justify-content: center; align-items: start; width: min(1280px, 100%); margin: 0 auto; }
 .api-category-sidebar { position: sticky; top: 98px; min-width: 0; }
 .api-category-toggle { display: none; }
@@ -327,6 +348,13 @@
 .api-category-list > button.is-selected > span { color: #e38b6e; }
 .api-search-empty { padding: 13px 8px; color: #8e8980; font-size: 9px; line-height: 1.6; }
 .api-doc-content { min-width: 0; }
+.api-platform-tabs { display: flex; gap: 4px; margin: 0 0 18px; padding: 4px; border: 1px solid var(--dev-line); background: var(--dev-panel); }
+.api-platform-tabs button { min-width: 88px; min-height: 34px; padding: 0 13px; border: 1px solid transparent; background: transparent; color: var(--dev-body); cursor: pointer; font: 13px 'DM Sans', 'Noto Sans SC', sans-serif; }
+.api-platform-tabs button:hover { color: var(--dev-text); }
+.api-platform-tabs button.is-active { border-color: var(--dev-border); background: var(--dev-bg-deep); color: var(--dev-text); }
+.api-platform-status { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 12px; border: 1px solid var(--dev-line); background: var(--dev-panel); }
+.api-platform-status b { flex: 0 0 auto; color: var(--dev-brand); font-size: 12px; font-weight: 500; }
+.api-platform-status span { color: var(--dev-body); font-size: 12px; line-height: 1.65; }
 .api-doc-header { scroll-margin-top: 94px; padding: 10px 0 20px; border-bottom: 1px solid #302f2d; }
 .api-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 17px; margin-top: 12px; }
 .api-doc-breadcrumb { margin-bottom: 7px; color: #99948b; font-size: 9px; }
@@ -782,13 +810,20 @@
   .sdk-download-heading { margin-bottom: 21px; }
   .sdk-download-heading h1 { font-size: 27px; }
   .sdk-download-grid { grid-template-columns: 1fr; gap: 13px; }
+  .sdk-download-side-stack { grid-template-rows: none; grid-template-columns: 1fr; gap: 13px; }
   .sdk-download-card { min-height: 0; padding: 21px 18px 19px; }
   .sdk-download-copy { margin-top: 20px; }
   .sdk-release-grid { grid-template-columns: repeat(2, 1fr); gap: 14px 12px; margin-top: 21px; }
   .sdk-download-actions { flex-wrap: wrap; gap: 15px 19px; margin-top: 16px; }
   .sdk-download-button { min-width: 136px; }
-  .sdk-download-ios { min-height: 248px; }
-  .ios-coming-visual { min-height: 75px; }
+  .sdk-download-ios, .sdk-download-harmony { min-height: 248px; padding: 21px 18px 19px; }
+  .sdk-download-side-stack .sdk-download-copy { margin-top: 20px; }
+  .sdk-download-side-stack .sdk-download-copy h2 { margin: 8px 0 9px; font-size: 21px; }
+  .sdk-download-side-stack .sdk-download-copy p { font-size: 14px; line-height: 1.8; }
+  .sdk-download-side-stack .ios-coming-visual { min-height: 75px; font-size: 28px; }
+  .sdk-download-side-stack .ios-coming-visual i { width: 38px; }
+  .sdk-download-side-stack .ios-coming-visual span:last-child { font-size: 14px; }
+  .sdk-download-side-stack .ios-download-state { padding-top: 16px; }
   .quick-start-page { min-height: calc(100svh - 64px); padding: 25px 5% 40px; }
   .quick-start-layout { grid-template-columns: 1fr; gap: 18px; }
   .quick-start-sidebar { position: sticky; z-index: 8; top: 64px; }
@@ -881,17 +916,17 @@
 .prototype-auth-launcher { display: flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 15px; border: 1px solid #6d493b; border-radius: 3px; background: #211a17; color: #f1d1c4; box-shadow: 0 8px 28px #0008; cursor: pointer; font-size: 13px; }
 .prototype-auth-launcher:hover, .prototype-auth-launcher.is-open { border-color: #e47a59; background: #2a1d18; }
 .prototype-auth-launcher-dot { width: 7px; height: 7px; border-radius: 50%; background: #ef845f; box-shadow: 0 0 0 3px #ef845f26; }
-.prototype-auth-panel { width: 270px; max-height: min(70vh, 420px); overflow-y: auto; margin-bottom: 8px; padding: 13px; border: 1px solid #45413b; background: #171716; color: #e9e4dc; box-shadow: 0 16px 50px #000b; }
-.prototype-auth-panel > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.prototype-auth-panel { width: 250px; max-height: min(55vh, 300px); overflow-y: auto; margin-bottom: 8px; padding: 11px; border: 1px solid #45413b; background: #171716; color: #e9e4dc; box-shadow: 0 16px 50px #000b; }
+.prototype-auth-panel > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
 .prototype-auth-panel > header h2 { margin: 4px 0 0; font-size: 16px; font-weight: 500; }
 .prototype-auth-panel > header button { width: 28px; height: 28px; border: 1px solid #3c3934; background: transparent; color: #aaa49b; cursor: pointer; font-size: 20px; }
-.prototype-auth-current { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 9px; padding: 8px; border: 1px solid #383530; background: #1c1b19; font-size: 11px; }
+.prototype-auth-current { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 7px; padding: 7px 8px; border: 1px solid #383530; background: #1c1b19; font-size: 11px; }
 .prototype-auth-current span { color: #a7a197; }
 .prototype-auth-current b { color: #f0b08f; font-weight: 500; text-align: right; }
 .prototype-auth-panel fieldset { margin: 0; padding: 0; border: 0; }
 .prototype-auth-panel legend { margin-bottom: 5px; color: #c4beb4; font-size: 11px; }
-.prototype-auth-radio-list { display: grid; gap: 4px; }
-.prototype-auth-radio { display: flex; align-items: center; gap: 8px; min-height: 25px; padding: 3px 7px; border: 1px solid transparent; color: #b9b2a8; cursor: pointer; font-size: 11px; }
+.prototype-auth-radio-list { display: grid; gap: 2px; }
+.prototype-auth-radio { display: flex; align-items: center; gap: 8px; min-height: 27px; padding: 3px 7px; border: 1px solid transparent; color: #b9b2a8; cursor: pointer; font-size: 11px; }
 .prototype-auth-radio input { width: 13px; height: 13px; margin: 0; accent-color: #e34a35; }
 .prototype-auth-radio.is-selected { border-color: #57352b; background: #211a18; color: #f0d1c6; }
 .prototype-auth-radio:hover { color: #fff; }
@@ -1092,10 +1127,6 @@
 .developer-shell .prototype-auth-radio { border-color: transparent; color: var(--dev-body); }
 .developer-shell .prototype-auth-radio.is-selected { border-color: #57352b; background: #211a18; color: #f0d1c6; }
 .developer-shell .prototype-auth-panel > header h2 { margin: 0; }
-.developer-shell .prototype-auth-confirm { width: 100%; min-height: 36px; margin: 2px 0 8px; border: 1px solid transparent; border-radius: var(--dev-radius); background: var(--dev-brand); color: #fff8f3; cursor: pointer; font-size: 12px; font-weight: 600; }
-.developer-shell .prototype-auth-confirm:disabled { border-color: var(--dev-line); background: #242323; color: var(--dev-subtle); cursor: default; }
-.developer-shell .prototype-auth-reset { width: 100%; min-height: 32px; border: 1px solid var(--dev-line); border-radius: var(--dev-radius); background: transparent; color: var(--dev-body); cursor: pointer; font-size: 11px; }
-.developer-shell .prototype-auth-reset:hover { border-color: var(--dev-border); color: var(--dev-text); }
 .developer-shell .prototype-auth-save-error { color: #ef9b88 !important; font-size: 11px !important; }
 
 .api-hierarchy-list { gap: 2px; }

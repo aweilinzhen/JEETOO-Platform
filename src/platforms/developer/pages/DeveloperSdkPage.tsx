@@ -60,12 +60,21 @@ export function DeveloperSdkPage() {
             {!isAuthorized && <div className="sdk-authorization-note"><span>i</span> SDK 文件仅向已获得开发者授权的账号开放。</div>}
           </article>
 
-          <article className="sdk-download-card sdk-download-ios">
-            <div className="sdk-download-card-top"><div className="platform-icon ios-icon">●</div><span className="coming-pill">COMING SOON</span></div>
-            <div className="sdk-download-copy"><div className="sdk-kicker">APPLE SDK</div><h2>iOS SDK</h2><p>iOS 平台 SDK 正在准备中，开放时间将通过更新日志同步发布。</p></div>
-            <div className="ios-coming-visual" aria-hidden="true"><span>iOS</span><i /><span>SDK</span></div>
-            <div className="ios-download-state"><b>暂未开放下载</b><span>COMING SOON</span></div>
-          </article>
+          <div className="sdk-download-side-stack">
+            <article className="sdk-download-card sdk-download-ios">
+              <div className="sdk-download-card-top"><div className="platform-icon ios-icon">●</div><span className="coming-pill">COMING SOON</span></div>
+              <div className="sdk-download-copy"><div className="sdk-kicker">APPLE SDK</div><h2>iOS SDK</h2><p>iOS 平台 SDK 正在准备中，开放时间将通过更新日志同步发布。</p></div>
+              <div className="ios-coming-visual" aria-hidden="true"><span>iOS</span><i /><span>SDK</span></div>
+              <div className="ios-download-state"><b>暂未开放下载</b><span>COMING SOON</span></div>
+            </article>
+
+            <article className="sdk-download-card sdk-download-harmony">
+              <div className="sdk-download-card-top"><div className="platform-icon ios-icon">H</div><span className="coming-pill">COMING SOON</span></div>
+              <div className="sdk-download-copy"><div className="sdk-kicker">HARMONYOS SDK</div><h2>HarmonyOS SDK</h2><p>鸿蒙平台 SDK 正在准备中，开放时间将通过更新日志同步发布。</p></div>
+              <div className="ios-coming-visual" aria-hidden="true"><span>HarmonyOS</span><i /><span>SDK</span></div>
+              <div className="ios-download-state"><b>暂未开放下载</b><span>COMING SOON</span></div>
+            </article>
+          </div>
         </div>
         <div className="sdk-download-footer-note">版本记录：v1.0.0、v1.0.1、v1.0.2、v1.0.3、v1.0.4、v1.0.5、v1.0.6-Beta、v1.0.7。最新记录为 v1.0.7（2026-09-03）；未提供 AAR 下载地址。</div>
       </div>

@@ -1,8 +1,19 @@
 import { Fragment, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { QuickStartCodeBlock } from '../components/QuickStartCodeBlock'
-import { apiDocs, type ApiDocNode, type MarkdownBlock } from '../mock/apiDocs'
+import { type ApiDocNode, type MarkdownBlock } from '../mock/apiDocs'
+import { API_PLATFORM_STORAGE_KEY, apiPlatformDocs, apiPlatforms, type ApiPlatform } from '../mock/apiPlatformDocs'
 import { useMockAuthState } from '../mock/access'
+
+function readApiPlatform(): ApiPlatform {
+  if (typeof window === 'undefined') return 'android'
+  try {
+    const saved = window.localStorage.getItem(API_PLATFORM_STORAGE_KEY)
+    return saved === 'ios' || saved === 'harmony' ? saved : 'android'
+  } catch {
+    return 'android'
+  }
+}
 
 function inlineMarkdown(text: string): ReactNode[] {
   const nodes: ReactNode[] = []
@@ -83,25 +94,35 @@ function renderNodeContent(node: ApiDocNode, depth = 0): ReactNode {
 
 export function ApiReferencePage() {
   const { loginStatus } = useMockAuthState()
-  const initialId = apiDocs[0]?.id ?? ''
-  const [selectedId, setSelectedId] = useState(initialId)
+  const [platform, setPlatform] = useState<ApiPlatform>(readApiPlatform)
+  const activePlatform = apiPlatforms.find((item) => item.id === platform) ?? apiPlatforms[0]
+  const activeDocs = apiPlatformDocs[platform]
+  const [selectedId, setSelectedId] = useState(activeDocs[0]?.id ?? '')
   const [search, setSearch] = useState('')
   const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [directoryOpen, setDirectoryOpen] = useState(true)
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({})
-  const selected = findNode(apiDocs, selectedId) ?? apiDocs[0]
-  const selectedPath = findPath(apiDocs, selected.id)
+  const selected = findNode(activeDocs, selectedId) ?? activeDocs[0]
+  const selectedPath = selected ? findPath(activeDocs, selected.id) : []
   const authorized = loginStatus === 'logged_in'
   const query = search.trim().toLocaleLowerCase()
   const filteredDocs = useMemo(() => {
-    if (!query) return apiDocs
+    if (!query) return activeDocs
     const filterNode = (node: ApiDocNode): ApiDocNode | null => {
       const children = node.children.map(filterNode).filter((child): child is ApiDocNode => child !== null)
       if (!nodeText(node).includes(query)) return null
       return { ...node, children }
     }
-    return apiDocs.map(filterNode).filter((node): node is ApiDocNode => node !== null)
-  }, [query])
+    return activeDocs.map(filterNode).filter((node): node is ApiDocNode => node !== null)
+  }, [activeDocs, query])
+
+  const selectPlatform = (nextPlatform: ApiPlatform) => {
+    setPlatform(nextPlatform)
+    setSelectedId(apiPlatformDocs[nextPlatform][0]?.id ?? '')
+    setSearch('')
+    setExpandedChapters({})
+    try { window.localStorage.setItem(API_PLATFORM_STORAGE_KEY, nextPlatform) } catch { /* keep the current selection in memory */ }
+  }
 
   const selectDoc = (id: string) => {
     setSelectedId(id)
@@ -129,13 +150,26 @@ export function ApiReferencePage() {
 
   return (
     <section className="quick-start-page api-reference-page">
+      {!authorized ? <main className="api-login-gate">
+        <div className="api-login-gate-content">
+          <div className="api-login-eyebrow"><span /> JEETOO DEVELOPER DOCUMENTATION</div>
+          <span className="api-login-status">LOGIN REQUIRED</span>
+          <div className="api-login-lock" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none"><rect x="10" y="21" width="28" height="21" rx="2" /><path d="M16 21v-7a8 8 0 0 1 16 0v7" /><circle cx="24" cy="30" r="2" /><path d="M24 32v4" /></svg>
+          </div>
+          <h1>登录后查看完整 API 文档</h1>
+          <p>登录 JEETOO 开发者账号，即可查看当前产品的完整 API 接口、参数说明及代码示例。</p>
+          <Link className="button button-accent api-login-button" to="/developer/login">立即登录 <span>↗</span></Link>
+          <div className="api-login-footnote">登录即获得当前产品 API 文档访问权限。</div>
+        </div>
+      </main> :
       <div className="api-docs-layout">
         <aside className="api-category-sidebar">
           <button className="api-category-toggle" type="button" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen((open) => !open)}><span>API 文档目录</span><b>{categoriesOpen ? '−' : '+'}</b></button>
           <div className={`api-category-panel${categoriesOpen ? ' is-open' : ''}`}>
             <label className="api-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索章节" aria-label="搜索 API 章节" /></label>
-            <button className="api-directory-toggle" type="button" aria-expanded={directoryOpen} onClick={() => setDirectoryOpen((open) => !open)}><span>Android SDK</span><b>{directoryOpen ? '−' : '+'}</b></button>
-            {directoryOpen && <nav className="api-category-list api-hierarchy-list" aria-label="Android SDK 原始章节目录">
+            <button className="api-directory-toggle" type="button" aria-expanded={directoryOpen} onClick={() => setDirectoryOpen((open) => !open)}><span>{activePlatform.sidebarTitle}</span><b>{directoryOpen ? '−' : '+'}</b></button>
+            {directoryOpen && <nav className="api-category-list api-hierarchy-list" aria-label={`${activePlatform.sidebarTitle} 章节目录`}>
               {filteredDocs.map((node) => renderDirectoryNode(node))}
               {filteredDocs.length === 0 && <div className="api-search-empty">没有找到匹配的章节</div>}
             </nav>}
@@ -143,16 +177,19 @@ export function ApiReferencePage() {
         </aside>
 
         <article className="api-doc-content">
+          <nav className="api-platform-tabs" aria-label="选择 API 文档平台">
+            {apiPlatforms.map((item) => <button className={platform === item.id ? 'is-active' : ''} type="button" aria-pressed={platform === item.id} key={item.id} onClick={() => selectPlatform(item.id)}>{item.label}</button>)}
+          </nav>
           {!selected ? <div className="api-empty-state"><h2>API 文档暂不可用</h2></div> : <>
             <header className="api-doc-header" id="api-top">
-              <div className="apply-eyebrow"><span /> ANDROID SDK DOCUMENTATION</div>
-              <div className="api-title-row"><div><div className="api-doc-breadcrumb">{selectedPath.slice(0, -1).map((item) => item.title).join(' / ') || 'Android SDK'}</div><h1>{selected.title}</h1></div><span className="platform-chip">ANDROID</span></div>
-              {authorized && <div className="api-mock-note"><span>i</span> 以下章节内容直接依据《加推录音卡Android SDK.md》原文展示。</div>}
+              <div className="apply-eyebrow"><span /> {activePlatform.documentationTitle.toUpperCase()}</div>
+              <div className="api-title-row"><div><div className="api-doc-breadcrumb">{selectedPath.slice(0, -1).map((item) => item.title).join(' / ') || activePlatform.sidebarTitle}</div><h1>{selected.title}</h1></div><span className="platform-chip">{activePlatform.label.toUpperCase()}</span></div>
+              {platform === 'android'
+                ? <div className="api-mock-note"><span>i</span> 以下章节内容直接依据《加推录音卡Android SDK.md》原文展示。</div>
+                : <div className="api-platform-status"><b>{platform === 'ios' ? '筹备中' : '规划中'}</b><span>{platform === 'ios' ? 'iOS SDK 正在整理中，后续将通过更新日志发布。' : '鸿蒙 SDK 正在准备中，后续开放信息将通过更新日志发布。'}</span></div>}
             </header>
 
-            {!authorized
-              ? <section className="api-locked-details"><div className="api-locked-mark">⌑</div><div><h2>登录后查看完整 API 文档</h2><p>登录开发者账号后，即可查看当前产品对应的完整 API 文档。</p></div><Link className="button button-accent" to="/developer/login">立即登录 <span>↗</span></Link></section>
-              : filteredDocs.length === 0
+            {filteredDocs.length === 0
                 ? <div className="api-empty-state"><span>⌕</span><h2>没有找到匹配内容</h2><p>请尝试其他章节名称或关键词。</p></div>
                 : <><section className="api-raw-content" id={`api-section-${selected.id}`}>
                     {renderNodeContent(selected)}
@@ -162,7 +199,7 @@ export function ApiReferencePage() {
         </article>
 
         {selected && authorized && <aside className="api-page-outline"><div className="api-outline-title">本页目录</div>{collectOutline(selected).map((node) => <a className={`api-outline-level-${node.level}`} key={node.id} href={`#api-section-${node.id}`} onClick={(event) => { event.preventDefault(); document.getElementById(`api-section-${node.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}>{node.title}</a>)}</aside>}
-      </div>
+      </div>}
     </section>
   )
 }
