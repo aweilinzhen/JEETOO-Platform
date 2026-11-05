@@ -143,8 +143,37 @@ export function DeveloperApplyPage() {
     <section className="apply-page">
       <div className="apply-layout">
         <aside className="apply-intro">
-          <h1>申请开发接入</h1>
-          <p className="apply-description">申请 JEETOO AI 录音卡 SDK 接入权限。</p>
+          <div className="apply-intro-overview">
+            <div className="apply-brand-label">JEETOO DEVELOPER PLATFORM</div>
+            <h1>申请开发接入</h1>
+            <h2>让 AI 录音能力，融入你的产品。</h2>
+            <p className="apply-description">申请 JEETOO AI 录音卡 SDK 接入权限，获取设备接入与应用集成所需的开发资源。</p>
+          </div>
+
+          <div className="apply-intro-features" aria-label="SDK 接入能力">
+            <div className="apply-intro-feature">
+              <span className="apply-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M8 7V5h8v2M8 12h8M8 15h5"/></svg></span>
+              <div><h3>设备连接与控制</h3><p>蓝牙连接、设备状态、录音控制</p></div>
+            </div>
+            <div className="apply-intro-feature">
+              <span className="apply-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5h14v14H5zM8 9h8M8 12h8M8 15h5"/><path d="M8 3v4M16 3v4"/></svg></span>
+              <div><h3>录音与文件管理</h3><p>录音管理、文件获取、音频传输</p></div>
+            </div>
+            <div className="apply-intro-feature">
+              <span className="apply-feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5" width="11" height="14" rx="2"/><rect x="15.5" y="8" width="6" height="10" rx="1.5"/><path d="M6 16h4M18 15h1M13.5 11h2"/></svg></span>
+              <div><h3>多平台 SDK 支持</h3><p>Android、iOS、HarmonyOS</p></div>
+            </div>
+          </div>
+
+          <div className="apply-intro-process">
+            <h3>接入流程</h3>
+            <div className="apply-process-steps">
+              <span><b>01</b>提交申请</span><i aria-hidden="true">→</i>
+              <span><b>02</b>审核开通</span><i aria-hidden="true">→</i>
+              <span><b>03</b>获取 SDK</span>
+            </div>
+          </div>
+
           <div className="apply-support"><a href="mailto:developer@jeetoo.com">联系技术支持 <b>↗</b></a></div>
         </aside>
 
