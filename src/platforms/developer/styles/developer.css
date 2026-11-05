@@ -1171,7 +1171,7 @@
 
 /* SDK access summary alongside the application form. */
 .apply-layout { align-items: stretch; }
-.apply-intro { align-self: center; display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 0; }
+.apply-intro { align-self: start; display: flex; flex-direction: column; justify-content: flex-start; gap: 24px; padding: 0; }
 .apply-brand-label { margin-bottom: 18px; color: var(--dev-subtle); font: 10px var(--mono); letter-spacing: .16em; }
 .apply-intro h1 { margin: 0 0 13px; }
 .apply-intro-overview > h2 { margin: 0 0 13px; color: var(--dev-text); font-size: 20px; font-weight: 500; line-height: 1.5; letter-spacing: -.025em; }
