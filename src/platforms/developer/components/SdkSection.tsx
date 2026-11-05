@@ -1,37 +1,90 @@
-import { Link } from 'react-router-dom'
-import { getRestrictedResourcePath, useMockAuthState } from '../mock/access'
 import { SectionHeading } from './SectionHeading'
 
-export function SdkSection() {
-  const { loginStatus, accessStatus } = useMockAuthState()
-  const accessPath = getRestrictedResourcePath('/developer/sdk')
-  const authorized = loginStatus === 'logged_in' && accessStatus === 'authorized'
-  const gatedLabel = loginStatus === 'logged_out' ? '登录后查看' : authorized ? '下载 SDK' : accessStatus === 'pending' ? '查看申请状态' : accessStatus === 'rejected' ? '重新申请' : '申请开发接入'
-  const statusLabel = {
-    'not-applied': loginStatus === 'logged_out' ? '需登录' : '需申请授权',
-    pending: '申请审核中',
-    rejected: '申请未通过',
-    authorized: '已开放下载',
-  }[accessStatus]
+const platforms = [
+  {
+    id: 'android',
+    className: 'sdk-android',
+    icon: 'android',
+    title: 'Android SDK',
+    description: '通过 AAR 集成设备连接、录音控制、文件管理与传输能力。',
+    details: [
+      ['系统版本', 'Android 5.0+（API 21）'],
+      ['开发语言', 'Kotlin / Java'],
+      ['集成方式', 'AAR'],
+    ],
+  },
+  {
+    id: 'ios',
+    className: 'sdk-ios',
+    icon: 'ios',
+    title: 'iOS SDK',
+    description: '通过 XCFramework 集成设备连接、状态管理与录音文件传输能力。',
+    details: [
+      ['系统版本', 'iOS 13.0+'],
+      ['开发语言', 'Swift / Objective-C'],
+      ['集成方式', 'XCFramework'],
+    ],
+  },
+  {
+    id: 'harmony',
+    className: 'sdk-harmony',
+    icon: 'harmony',
+    title: 'HarmonyOS SDK',
+    description: '通过 HAR 集成设备连接、状态管理与文件传输能力。',
+    details: [
+      ['系统版本', 'HarmonyOS 6.0+（API 20）'],
+      ['开发语言', 'ArkTS / ETS'],
+      ['集成方式', 'HAR'],
+    ],
+  },
+]
+
+function PlatformIcon({ type }: { type: string }) {
   return (
-    <section className="home-section sdk-section" id="sdk">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {type === 'android' && <>
+        <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
+        <path d="M10 5.5h4M10 18.5h4" />
+        <path d="M4.5 7.5v8M19.5 7.5v8" />
+      </>}
+      {type === 'ios' && <>
+        <rect x="5.5" y="2.5" width="13" height="19" rx="3" />
+        <path d="M9.5 5.5h5M8.5 9h7M8.5 12h7M8.5 15h4" />
+        <path d="M10.5 18.5h3" />
+      </>}
+      {type === 'harmony' && <>
+        <rect x="2.5" y="5" width="11" height="14" rx="2" />
+        <rect x="15.5" y="3" width="6" height="10" rx="1.5" />
+        <path d="M6 21h4M17.5 16h2M13.5 10h2" />
+        <circle cx="15" cy="10" r="1.5" />
+      </>}
+    </svg>
+  )
+}
+
+export function SdkSection() {
+  return (
+    <section className="home-section sdk-section" id="platform-support">
       <div className="section-wrap">
-        <SectionHeading eyebrow="SDK DOWNLOAD" title="从 SDK 开始，快速集成" description="获取官方开发工具包，将 JEETOO 设备能力集成到你的应用。" />
-        <div className="sdk-grid">
-          <article className="sdk-card sdk-android">
-            <div className="sdk-card-heading"><div className="platform-icon android-icon">A</div><span className={`availability availability-${accessStatus}`}><i /> {statusLabel}</span></div>
-            <div className="sdk-card-copy"><div className="sdk-kicker">ANDROID SDK</div><h3>Android SDK</h3><p>适用于 Android 应用的设备连接与录音管理工具包。</p></div>
-            <div className="sdk-meta"><span>PACKAGE FORMAT</span><b>AAR</b><span>VERSION</span><b>v1.0.7</b></div>
-            <Link className="button button-accent sdk-action" to={accessPath}>{gatedLabel}<span>↗</span></Link>
-          </article>
-          <article className="sdk-card sdk-ios">
-            <div className="sdk-card-heading"><div className="platform-icon ios-icon">●</div><span className="coming-pill">COMING SOON</span></div>
-            <div className="sdk-card-copy"><div className="sdk-kicker">APPLE SDK</div><h3>iOS SDK</h3><p>iOS 平台支持正在准备中，敬请关注后续更新。</p></div>
-            <div className="ios-placeholder"><span>iOS</span><span>SDK</span></div>
-            <div className="sdk-card-foot">即将开放 <span>—</span></div>
-          </article>
+        <SectionHeading title="支持多平台接入。" description="Android、iOS 与 HarmonyOS 的 SDK 接入基础信息。" />
+        <div className="sdk-grid sdk-home-platform-grid-three">
+          {platforms.map((platform) => (
+            <article className={`sdk-card ${platform.className}`} key={platform.id}>
+              <div className="sdk-card-heading">
+                <div className="platform-icon"><PlatformIcon type={platform.icon} /></div>
+              </div>
+              <div className="sdk-card-copy">
+                <h3>{platform.title}</h3>
+                <p>{platform.description}</p>
+              </div>
+              <dl className="sdk-platform-facts">
+                {platform.details.map(([label, value]) => (
+                  <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+                ))}
+              </dl>
+            </article>
+          ))}
         </div>
-        {!authorized && <p className="sdk-access-note"><span>i</span> SDK 文件仅向已登录且已获授权的开发者开放。</p>}
       </div>
     </section>
   )

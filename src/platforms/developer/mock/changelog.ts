@@ -16,6 +16,36 @@ export type SdkRelease = {
 // Android release history transcribed from 加推录音卡Android SDK.md.
 export const sdkReleases: SdkRelease[] = [
   {
+    platform: 'ios', sdkName: 'iOS SDK', version: 'v1.0.7', releaseDate: '2026-09-03',
+    updateTypes: ['设备状态'], newFeatures: ['设备状态新增 mtu 字段。'], improvements: [], fixes: [],
+    compatibility: '最低支持 iOS 13.0。', sampleUpdates: [],
+  },
+  {
+    platform: 'ios', sdkName: 'iOS SDK', version: 'v1.0.6-Beta', releaseDate: '2026-08-06',
+    updateTypes: ['边录边传', '补帧下载', '一二代协议'], newFeatures: ['新增边录边传及补帧下载功能。', '新增一、二代协议兼容处理。'], improvements: [], fixes: [],
+    compatibility: '新增功能需匹配相应新固件；原文提示未在文档说明的部分能力不建议直接使用。', sampleUpdates: [],
+  },
+  {
+    platform: 'ios', sdkName: 'iOS SDK', version: 'v1.0.4', releaseDate: '2026-07-10',
+    updateTypes: ['蓝牙连接', 'State Restoration'], newFeatures: ['支持 CoreBluetooth State Restoration。', '新增 retrievePeripheral(withIdentifiers:)。'], improvements: ['旧 disconnect 方法名调整为 cancelPeripheralConnection。'], fixes: [],
+    compatibility: 'State Restoration 需要满足 iOS 后台蓝牙条件；详见 iOS API 文档。', sampleUpdates: [],
+  },
+  {
+    platform: 'ios', sdkName: 'iOS SDK', version: 'v1.0.3', releaseDate: '2026-04-28',
+    updateTypes: ['最低系统', 'OTA'], newFeatures: ['新增 OTA 相关接口。'], improvements: ['MinimumOSVersion 兼容至 iOS 13。'], fixes: [],
+    compatibility: '最低支持系统为 iOS 13.0。', sampleUpdates: [],
+  },
+  {
+    platform: 'ios', sdkName: 'iOS SDK', version: 'v1.0.2', releaseDate: '2026-03-25',
+    updateTypes: ['OGG', 'MARK'], newFeatures: ['支持 OGG 文件播放及 MARK 数据读取（数据存储在文件 tags 元数据中）。'], improvements: [], fixes: [],
+    compatibility: '原文未提供额外兼容性说明。', sampleUpdates: [],
+  },
+  {
+    platform: 'ios', sdkName: 'iOS SDK', version: 'v1.0.0', releaseDate: '2026-03-06',
+    updateTypes: ['初版'], newFeatures: ['初版 SDK。'], improvements: [], fixes: [],
+    compatibility: '最低支持 iOS 13.0。', sampleUpdates: [],
+  },
+  {
     platform: 'android', sdkName: 'Android SDK', version: 'v1.0.7', releaseDate: '2026-09-03',
     updateTypes: ['设备状态', '蓝牙连接', 'Demo'],
     newFeatures: ['设备状态新增 mtu 字段。'], improvements: ['蓝牙连接操作相关逻辑优化。'], fixes: [],

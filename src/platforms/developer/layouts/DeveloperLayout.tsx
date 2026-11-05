@@ -7,10 +7,11 @@ import '../styles/developer.css'
 
 const links = [
   ['首页', '/developer'],
-  ['快速开始', '/developer/quick-start'],
-  ['SDK 下载', '/developer/sdk'],
+  ['设备指南', '/developer/device-guide'],
   ['API 文档', '/developer/api'],
+  ['SDK 下载', '/developer/sdk'],
   ['Demo 示例', '/developer/demo'],
+  ['常见问题', '/developer/faq'],
   ['更新日志', '/developer/changelog'],
 ]
 
@@ -34,10 +35,10 @@ export function DeveloperLayout() {
           {links.map(([label, href]) => <NavLink key={href} to={href} end={href === '/developer'} onClick={() => setMenuOpen(false)}>{label}</NavLink>)}
         </nav>
         <div className="header-actions">
-          <div className="language-switch" role="group" aria-label="语言，当前为中文">
-            <span className="is-active" aria-current="true">中</span><i aria-hidden="true">|</i><span>EN</span>
+          <div className="language-switch" role="group" aria-label="语言选择（当前为中文）">
+            <span className="is-active" aria-current="true">中文</span><i aria-hidden="true">|</i><span aria-disabled="true">EN</span>
           </div>
-          {!isLoginPage && <NavLink to="/developer/login">登录</NavLink>}
+          {!isLoginPage && <NavLink className="header-login-link" to="/developer/login">登录</NavLink>}
           <NavLink className="button button-accent" to="/developer/apply">申请接入 <span>↗</span></NavLink>
         </div>
       </header>

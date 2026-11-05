@@ -80,7 +80,7 @@ function getNumber(title: string) {
   return title.match(/^(\d+(?:\.\d+)?)/)?.[1] ?? ''
 }
 
-function parseDocument(markdown: string): ApiDocNode[] {
+export function parseApiMarkdown(markdown: string): ApiDocNode[] {
   const roots: ApiDocNode[] = []
   let current: ApiDocNode | undefined
   let currentChild: ApiDocNode | undefined
@@ -122,4 +122,4 @@ function parseDocument(markdown: string): ApiDocNode[] {
   return roots
 }
 
-export const apiDocs = parseDocument(source)
+export const apiDocs = parseApiMarkdown(source)

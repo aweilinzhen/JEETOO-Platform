@@ -18,12 +18,12 @@ export function DeveloperChangelogPage() {
         <div className="changelog-toolbar">
           <div className="changelog-platform-tabs" role="group" aria-label="按 SDK 平台筛选">
             <button className={platform === 'android' ? 'is-active' : ''} type="button" onClick={() => setPlatform('android')}>Android SDK <span>{sdkReleases.filter((release) => release.platform === 'android').length}</span></button>
-            <button className={platform === 'ios' ? 'is-active' : ''} type="button" onClick={() => setPlatform('ios')}>iOS SDK <span>暂未开放</span></button>
+            <button className={platform === 'ios' ? 'is-active' : ''} type="button" onClick={() => { setPlatform('ios'); setExpandedVersion(sdkReleases.find((release) => release.platform === 'ios')?.version ?? null) }}>iOS SDK <span>{sdkReleases.filter((release) => release.platform === 'ios').length}</span></button>
           </div>
           <span className="changelog-filter-label">平台筛选</span>
         </div>
 
-        {releases.length === 0 ? <div className="changelog-empty"><span>—</span><h2>暂无版本记录</h2><p>iOS SDK 暂未开放，后续版本信息将在此更新。</p></div> : <div className="release-timeline">
+        {releases.length === 0 ? <div className="changelog-empty"><span>—</span><h2>暂无版本记录</h2><p>该平台尚无可展示的版本记录。</p></div> : <div className="release-timeline">
           {releases.map((release, index) => {
             const expanded = expandedVersion === release.version
             return <article className="release-entry" key={`${release.platform}-${release.version}`}>

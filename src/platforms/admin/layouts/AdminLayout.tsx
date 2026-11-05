@@ -4,7 +4,6 @@ import { useAdminApplications } from '../mock/applications'
 import '../styles/admin.css'
 
 const links = [
-  ['⌂', '管理工作台', '/admin'],
   ['▤', '开发接入申请', '/admin/applications'],
   ['♙', '开发者账号', '/admin/developers'],
 ]
@@ -13,7 +12,7 @@ function getPageTitle(pathname: string) {
   if (/^\/admin\/applications\/[^/]+/.test(pathname)) return '申请详情'
   if (pathname.startsWith('/admin/applications')) return '开发接入申请'
   if (pathname.startsWith('/admin/developers')) return '开发者账号'
-  return '管理工作台'
+  return '开发接入申请'
 }
 
 export function AdminLayout() {
@@ -26,10 +25,10 @@ export function AdminLayout() {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <NavLink to="/admin" className="admin-brand"><span className="admin-brand-mark">J</span><span>JEETOO<small>Tenant Admin</small></span></NavLink>
+        <NavLink to="/admin/applications" className="admin-brand"><span className="admin-brand-mark">J</span><span>JEETOO<small>Tenant Admin</small></span></NavLink>
         <div className="admin-sidebar-label">平台管理</div>
         <nav className="admin-nav" aria-label="租户管理导航">
-          {links.map(([icon, label, href]) => <NavLink key={href} to={href} end={href === '/admin'} title={label}>
+          {links.map(([icon, label, href]) => <NavLink key={href} to={href} title={label}>
             <span className="admin-nav-icon">{icon}</span><span className="admin-nav-label">{label}</span>
             {href === '/admin/applications' && pendingCount > 0 && <span className="admin-nav-count">{pendingCount}</span>}
           </NavLink>)}

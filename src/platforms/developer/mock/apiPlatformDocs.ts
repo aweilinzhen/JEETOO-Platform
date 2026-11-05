@@ -1,4 +1,6 @@
-import { apiDocs, type ApiDocNode } from './apiDocs'
+import { apiDocs, parseApiMarkdown, type ApiDocNode } from './apiDocs'
+import { harmonyDocs } from './harmonyDocs'
+import iosSource from './iosSdkApi.md?raw'
 
 export type ApiPlatform = 'android' | 'ios' | 'harmony'
 export type ApiProduct = 'recorder-card' | 'smart-badge' | 'pin'
@@ -15,7 +17,7 @@ export const apiProducts: Array<{ id: ApiProduct; label: string }> = [
 export const apiPlatforms: Array<{ id: ApiPlatform; label: string; documentationTitle: string; sidebarTitle: string }> = [
   { id: 'android', label: 'Android', documentationTitle: 'Android SDK Documentation', sidebarTitle: 'Android SDK' },
   { id: 'ios', label: 'iOS', documentationTitle: 'iOS SDK Documentation', sidebarTitle: 'iOS SDK' },
-  { id: 'harmony', label: '鸿蒙', documentationTitle: 'HarmonyOS SDK Documentation', sidebarTitle: '鸿蒙 SDK' },
+  { id: 'harmony', label: 'HarmonyOS', documentationTitle: 'HarmonyOS SDK Documentation', sidebarTitle: 'HarmonyOS SDK' },
 ]
 
 function mockProductDocs(productName: string, platformName: string, platformStatus: string): ApiDocNode[] {
@@ -41,20 +43,20 @@ function mockProductDocs(productName: string, platformName: string, platformStat
 
 const recorderCardDocs = {
   android: apiDocs,
-  ios: mockProductDocs('AI 录音卡', 'iOS', '筹备中：iOS SDK 正在整理中，后续将通过更新日志发布。'),
-  harmony: mockProductDocs('AI 录音卡', '鸿蒙', '筹备中：鸿蒙 SDK 正在准备中，后续开放信息将通过更新日志发布。'),
+  ios: parseApiMarkdown(iosSource),
+  harmony: harmonyDocs,
 } satisfies Record<ApiPlatform, ApiDocNode[]>
 
 const smartBadgeDocs = {
   android: mockProductDocs('智能工卡', 'Android', 'Mock 占位：平台内容待补充。'),
   ios: mockProductDocs('智能工卡', 'iOS', 'Mock 占位：平台内容待补充。'),
-  harmony: mockProductDocs('智能工卡', '鸿蒙', 'Mock 占位：平台内容待补充。'),
+  harmony: mockProductDocs('智能工卡', 'HarmonyOS', 'Mock 占位：平台内容待补充。'),
 } satisfies Record<ApiPlatform, ApiDocNode[]>
 
 const pinDocs = {
   android: mockProductDocs('PIN', 'Android', 'Mock 占位：平台内容待补充。'),
   ios: mockProductDocs('PIN', 'iOS', 'Mock 占位：平台内容待补充。'),
-  harmony: mockProductDocs('PIN', '鸿蒙', 'Mock 占位：平台内容待补充。'),
+  harmony: mockProductDocs('PIN', 'HarmonyOS', 'Mock 占位：平台内容待补充。'),
 } satisfies Record<ApiPlatform, ApiDocNode[]>
 
 export const apiProductDocs: Record<ApiProduct, Record<ApiPlatform, ApiDocNode[]>> = {
