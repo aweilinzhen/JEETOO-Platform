@@ -1179,6 +1179,23 @@
 .apply-form-heading h2, .apply-success-state h2 { color: var(--dev-text); }
 .apply-form-heading p, .apply-description, .apply-benefit p,
 .apply-support, .apply-success-state > p, .review-note { color: var(--dev-body); font-size: var(--dev-font-support); }
+
+/* Keep the simplified application introduction balanced beside the form. */
+.apply-intro { padding-top: 74px; }
+.apply-intro h1 { margin: 0 0 16px; }
+.apply-description { max-width: 340px; margin: 0; line-height: 1.8; }
+.apply-support { margin-top: 28px; padding-top: 0; border-top: 0; font-size: 14px; }
+.apply-form-heading { margin-bottom: 18px; }
+.apply-form-heading h2 { margin: 0; }
+@media (max-width: 900px) {
+  .apply-intro { padding-top: 0; }
+}
+@media (max-width: 680px) {
+  .apply-intro h1 { margin-bottom: 12px; }
+  .apply-description { margin: 0; font-size: 14px; }
+  .apply-support { margin-top: 18px; }
+  .apply-form-heading { margin-bottom: 16px; }
+}
 .apply-field > span { color: #ded8d1; font-size: 13px; }
 .apply-field input, .apply-field select, .apply-field textarea,
 .login-input-wrap input { color: var(--dev-text); font-size: var(--dev-font-body); }

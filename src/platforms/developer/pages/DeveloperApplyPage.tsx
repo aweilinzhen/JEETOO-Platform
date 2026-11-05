@@ -143,15 +143,9 @@ export function DeveloperApplyPage() {
     <section className="apply-page">
       <div className="apply-layout">
         <aside className="apply-intro">
-          <div className="apply-eyebrow"><span /> DEVELOPER PROGRAM</div>
           <h1>申请开发接入</h1>
-          <div className="apply-english-title">Apply for Developer Access</div>
-          <p className="apply-description">告诉我们你希望如何将 JEETOO AI 录音设备集成到自己的应用中。</p>
-          <div className="apply-benefits">
-            <div className="apply-benefit"><span className="benefit-number">01</span><div><h2>技术集成指导</h2><p>提供 SDK 接入文档和技术支持。</p></div></div>
-            <div className="apply-benefit"><span className="benefit-number">02</span><div><h2>开发资源授权</h2><p>审核通过后开放 SDK、API 文档和 Demo。</p></div></div>
-          </div>
-          <div className="apply-support"><span>需要帮助？</span><a href="mailto:developer@jeetoo.com">联系技术支持 <b>↗</b></a></div>
+          <p className="apply-description">申请 JEETOO AI 录音卡 SDK 接入权限。</p>
+          <div className="apply-support"><a href="mailto:developer@jeetoo.com">联系技术支持 <b>↗</b></a></div>
         </aside>
 
         <div className="apply-form-panel">
@@ -164,7 +158,7 @@ export function DeveloperApplyPage() {
             <div className="review-note"><i /> 工作人员将尽快审核你的申请，请留意后续通知。</div>
             <Link className="button button-accent apply-submit" to="/developer/application-status">查看申请状态 <span>↗</span></Link>
           </div> : <>
-            <div className="apply-form-heading"><div className="apply-form-kicker">APPLICATION FORM</div><h2>企业及项目信息</h2><p>请填写以下信息，方便我们了解你的接入需求。</p></div>
+            <div className="apply-form-heading"><h2>企业及项目信息</h2></div>
             <form className="apply-form" onSubmit={submitApplication} noValidate>
               <div className="apply-fields-grid">
                 <label className="apply-field"><span>联系人姓名 <i>*</i></span><input autoComplete="name" value={form.contactName} onChange={(event) => updateField('contactName', event.target.value)} placeholder="请输入联系人姓名" /></label>
