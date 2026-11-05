@@ -58,13 +58,8 @@ export function DeveloperLoginPage() {
     <section className="login-page">
       <div className="login-layout">
         <div className="login-card">
-          <Link to="/developer" className="login-brand" aria-label="JEETOO Developer 首页">
-            <span className="brand-mark">J</span><span>JEETOO <b>Developer</b></span>
-          </Link>
           <div className="login-heading">
-            <div className="login-eyebrow"><span /> DEVELOPER ACCOUNT</div>
             <h1>欢迎回来</h1>
-            <p>登录加推开发者平台</p>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -92,9 +87,7 @@ export function DeveloperLoginPage() {
           </form>
 
           <div className="login-apply">还没有开发者权限？ <Link to="/developer/apply">申请开发接入 <span>→</span></Link></div>
-          <div className="login-account-note">使用申请时填写并完成激活的工作邮箱登录</div>
         </div>
-        <div className="login-side-note"><span className="side-note-rule" /><span>CONNECT YOUR IDEAS<br />WITH JEETOO</span></div>
       </div>
     </section>
   )
